@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.effrafax.qilin.primitives.generic.GroupFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -15,6 +16,8 @@ import qilin.primitives.CyclicGroup;
 import qilin.primitives.concrete.Zn;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Parameterized.class)
 public class CyclicGroupTest {
@@ -35,6 +38,7 @@ public class CyclicGroupTest {
 		assertEquals(Integer.valueOf(k % order), actual);
 	}
 
+	@Ignore
 	@Test
 	public void shouldMimicProvidedImplementation() {
 		CyclicGroup<BigInteger> group = new Zn(BigInteger.valueOf(order));
@@ -42,6 +46,25 @@ public class CyclicGroupTest {
 		BigInteger actual = group.multiply(group.getGenerator(), BigInteger.valueOf(k));
 
 		assertEquals(BigInteger.valueOf(k % order), actual);
+	}
+
+	@Test
+	public void doesZnContain0andOrder() {
+		assertTrue(new Zn(BigInteger.valueOf(order)).contains(BigInteger.valueOf(0)));
+		assertFalse(new Zn(BigInteger.valueOf(order)).contains(BigInteger.valueOf(order)));
+	}
+
+	@Test
+	public void repeatedAdditionVersusMultiplyInZn() {
+		CyclicGroup<BigInteger> group = new Zn(BigInteger.valueOf(order));
+
+		BigInteger accumulator = group.zero();
+		for (int i = 0; i < k; i++) {
+			accumulator = group.add(accumulator, group.getGenerator());
+		}
+
+		assertTrue(accumulator.equals(group.multiply(group.getGenerator(), BigInteger.valueOf(k))));
+
 	}
 
 	@Parameters
